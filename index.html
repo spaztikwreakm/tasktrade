@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b6b57" />
+  <meta name="description" content="TaskTrade AU — post a job, get quotes from verified local tradies, chat, pay securely." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>TaskTrade AU — Find local tradies</title>
+</head>
+<body>
+  <div id="app"><div class="shell"><main class="page"><div class="skeleton" style="height:200px"></div></main></div></div>
+
+  <script src="config.js"></script>
+  <script type="module">
+    if (!window.TASKTRADE_CONFIG || window.TASKTRADE_CONFIG.SUPABASE_URL.includes("YOUR-PROJECT-REF")) {
+      document.getElementById("app").innerHTML = `<div class="shell"><main class="page auth"><div class="card">
+        <h1>Setup needed</h1>
+        <p class="muted">Edit <small class="code">config.js</small> with your Supabase project URL, anon key, and functions URL before this app will run. See README.md for the full launch checklist.</p>
+      </main></div>`;
+    } else {
+      import("./app.js");
+    }
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  </script>
+</body>
+</html>
