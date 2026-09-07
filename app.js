@@ -70,7 +70,7 @@ window.setView = setView;
 async function refreshProfile() {
   if (!session) { profile = null; return; }
   const { data, error } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
-  if (error) { console.error(error); profile = null; return; }
+  if (error) { console.error(error); profile = null; errorMsg = "You are signed in, but your profile could not be loaded. Please retry or contact support."; return; }
   profile = data;
 }
 
@@ -81,10 +81,20 @@ async function bootstrap() {
   loading = false;
   render();
 
-  supabase.auth.onAuthStateChange(async (_event, newSession) => {
+  supabase.auth.onAuthStateChange((_event, newSession) => {
     session = newSession;
-    await refreshProfile();
-    render();
+    // Supabase holds its auth lock while invoking this callback. Run database
+    // work in a later task so sign-in can release that lock first.
+    setTimeout(async () => {
+      try {
+        await refreshProfile();
+      } catch (err) {
+        profile = null;
+        errorMsg = "Your profile could not be loaded. Please retry.";
+        console.error(err);
+      }
+      render();
+    }, 0);
   });
 }
 
